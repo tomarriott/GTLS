@@ -1196,6 +1196,8 @@ def search_multi_periods_again(
         (blockSize,1,1),(ootrGPU,patchedDatasGPU,durationsGPU,durationsSizeGPU,
         inverseSquaredPatchedDysGPU,patchedDatasSizeGPU,tSizeGPU,))
 
+        print(ootrGPU.size, ootrGPU.shape, ootrGPU.dtype)
+        
         ootrGPU = cp.cumsum(ootrGPU,axis=-1)
         calcAllOutOfTransitResiduals_step2_2GPU = module.get_function('calcAllOutOfTransitResiduals_step2_2GPU')
         blockSize,gridSizeX = calcGridBlockSize(tSize)

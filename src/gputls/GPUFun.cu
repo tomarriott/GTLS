@@ -378,7 +378,7 @@ extern "C"{
     * This was causing NaN values when some threads skipped the conditional block.
     */
     __global__ void calcAllLowestResidualsGPUB_SignalTiled_v2(
-        /* ... 参数列表与原版完全相同 ... */
+        /* ... The parameter list is identical to the original version ... */
         float *out, int *resultArrayXAxisSize,
         float *in_patched_datas, int *in_patched_datas_size, int *in_duration, int *in_duration_size,
         float *in_signal, int *in_max_signal_x_size, float *in_inverse_squared_patched_dys,
@@ -386,7 +386,7 @@ extern "C"{
         float *in_summed_edge_effect_correction, int *in_datapoints, float *cumsumGPU,
         float *in_transit_depth_min
     ) {
-        // 线程索引和初始设置
+        // Thread Index and Initial Setup
         int tid = blockIdx.x * blockDim.x + threadIdx.x;
         int y = blockIdx.y;
         int z = blockIdx.z;
@@ -409,7 +409,7 @@ extern "C"{
                 in_fullsum[(long long)z * (*in_duration_size) + y] :
                 in_ootr[(long long)y * (*resultArrayXAxisSize) + (long long)z * (*resultArrayXAxisSize) * (*in_duration_size) + tid - 1];
             
-            // 指针设置
+            // Pointer Settings
             float *data = in_patched_datas + (long long)z * (*in_patched_datas_size) + tid;
             float *dy = in_inverse_squared_patched_dys + (long long)z * (*in_patched_datas_size) + tid;
             float *signal = in_signal + (long long)y * (*in_max_signal_x_size);
@@ -419,14 +419,14 @@ extern "C"{
             float intransit_residual = 0.0f;
             int skipSearchPoint = 1;
 
-            // --- 直接全局内存访问 (无 __syncthreads) ---
+            // --- Direct global memory access (None __syncthreads) ---
             for (int i = 0; i < duration; i += skipSearchPoint) {
                 float sigi = signal[i] * reverse_scale;
                 float loss = data[i] - (1.0f - sigi);
                 intransit_residual += loss * loss * dy[i];
             }
             
-            // actualLossFraction 计算
+            // Calculate actualLossFraction
             float actualLossFraction = (float)duration / (((duration - 1) / skipSearchPoint) + 1);
             
             current_stat = intransit_residual * actualLossFraction + ootr - summed_edge_effect_correction;
