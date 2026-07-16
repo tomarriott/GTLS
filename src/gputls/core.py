@@ -1154,6 +1154,8 @@ def search_multi_periods_again(
         cumsumGPU = cp.empty((singleCalcPeriods,patchedDatasSize),dtype=cp.float32)
         ootrGPU = cp.empty((singleCalcPeriods,len(singleDurations),(tSize)),dtype=cp.float32)
 
+        print(ootrGPU.size, ootrGPU.shape, ootrGPU.dtype)
+
         fastFoldGPU = module.get_function('foldFast')
         blockSize,gridSizeX = calcGridBlockSize(tSize)
         fastFoldGPU((gridSizeX,singleCalcPeriods,),(blockSize,), (tGPU, periodsGPU,phasesGPU,periodsSizeGPU,tSizeGPU))
@@ -1196,8 +1198,6 @@ def search_multi_periods_again(
         (blockSize,1,1),(ootrGPU,patchedDatasGPU,durationsGPU,durationsSizeGPU,
         inverseSquaredPatchedDysGPU,patchedDatasSizeGPU,tSizeGPU,))
 
-        print(ootrGPU.size, ootrGPU.shape, ootrGPU.dtype)
-        
         ootrGPU = cp.cumsum(ootrGPU,axis=-1)
         calcAllOutOfTransitResiduals_step2_2GPU = module.get_function('calcAllOutOfTransitResiduals_step2_2GPU')
         blockSize,gridSizeX = calcGridBlockSize(tSize)
